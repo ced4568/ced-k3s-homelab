@@ -1,0 +1,70 @@
+{
+  "id": null,
+  "uid": "ced-ingress",
+  "title": "Ced's Ingress & MetalLB",
+  "tags": [
+    "ingress",
+    "metallb",
+    "ced-noc"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "NGINX Ingress HTTP Requests",
+      "id": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(nginx_ingress_controller_requests[5m])) by (ingress)",
+          "legendFormat": "{{ingress}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "NGINX Ingress 5xx Rate",
+      "id": 2,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(nginx_ingress_controller_requests{status=~\"5..\"}[5m])) by (ingress)",
+          "legendFormat": "{{ingress}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "MetalLB Announced IPs",
+      "id": 3,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(metallb_speaker_announced)",
+          "legendFormat": "announced",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

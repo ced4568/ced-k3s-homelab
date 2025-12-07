@@ -1,0 +1,41 @@
+# Ced's K3s HomeLab (for draw.io text import)
+
+# Paste this into draw.io via: Arrange → Insert → Advanced → From text
+
+Ced HomeLab
+  VLAN 10.10.30.0/24
+    UniFi Dream Router (10.10.30.1)
+    Proxmox VE (10.10.30.250)
+    MetalLB VIPs (10.10.30.251-254)
+
+Control Plane (Raspberry Pi)
+  k3s-django-1 (10.10.30.72) [control-plane, etcd]
+  k3s-django-2 (10.10.30.245) [control-plane, etcd]
+  k3s-django-3 (10.10.30.128) [control-plane, etcd]
+
+Ingress Nodes
+  k3s-node-1 (10.10.30.219) [ingress-node=true]
+  k3s-node-2 (10.10.30.134) [ingress-node=true]
+  k3s-node-3 (10.10.30.222) [ingress-node=true]
+
+Data Nodes
+  k3s-node-4 (10.10.30.126) [data-node=true]
+  k3s-node-5 (10.10.30.239) [data-node=true]
+  k3s-node-6 (10.10.30.208) [data-node=true]
+
+Monitoring Nodes
+  k3s-node-7 (10.10.30.198) [monitoring-node=true]
+  k3s-node-8 (10.10.30.216) [monitoring-node=true]
+  k3s-node-9 (10.10.30.29)  [monitoring-node=true]
+
+Kubernetes Services
+  MetalLB (L2)
+    IPAddressPool: 10.10.30.251-10.10.30.254
+  ingress-nginx
+    Service: LoadBalancer → MetalLB VIP (e.g. 10.10.30.251)
+  kube-prometheus-stack (Ced's NOC)
+    Prometheus
+    Alertmanager
+    Grafana (LoadBalancer via MetalLB)
+  Demo nginx app
+    Ingress: demo.local → ingress-nginx → demo-nginx Service
