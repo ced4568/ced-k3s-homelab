@@ -1,0 +1,65 @@
+{
+  "name": "Ced's NOC – Black Ops",
+  "version": "1.0.0",
+  "grafanaVersion": "12.3.0",
+  "palette": {
+    "background": "#050812",
+    "panelBackground": "#0B1020",
+    "panelBorder": "#1C2745",
+    "primaryText": "#E5ECFF",
+    "secondaryText": "#8A9BC9",
+    "mutedText": "#5C6888",
+    "accent": "#00F5A0",
+    "accentSoft": "#00B38A",
+    "warning": "#FFC857",
+    "danger": "#FF3366",
+    "gridLine": "#151B30"
+  },
+  "fonts": {
+    "primary": "Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+    "mono": "JetBrains Mono, Consolas, monospace",
+    "titleSize": "20px",
+    "statValueSize": "32px",
+    "labelSize": "12px"
+  },
+  "panels": {
+    "stat": {
+      "valueFont": "JetBrains Mono, monospace",
+      "textMode": "value",
+      "graphMode": "none",
+      "colorMode": "thresholds",
+      "thresholds": [
+        { "value": 0, "color": "#00F5A0" },
+        { "value": 80, "color": "#FFC857" },
+        { "value": 90, "color": "#FF3366" }
+      ]
+    },
+    "rowHeader": {
+      "background": "#050812",
+      "textColor": "#E5ECFF",
+      "borderBottom": "#1C2745"
+    }
+  },
+  "layout": {
+    "gridColumns": 24,
+    "clusterOverview": {
+      "topRowHeight": 8,
+      "bottomRowHeight": 6,
+      "panels": [
+        { "id": "clusterCpu", "title": "Cluster CPU %", "x": 0, "y": 0, "w": 8, "h": 8 },
+        { "id": "memoryUsage", "title": "Memory Usage (GiB)", "x": 8, "y": 0, "w": 8, "h": 8 },
+        { "id": "nodes", "title": "Nodes", "x": 16, "y": 0, "w": 8, "h": 8 },
+        { "id": "pods", "title": "Pods", "x": 0, "y": 8, "w": 12, "h": 6 },
+        { "id": "failedPods", "title": "Failed Pods", "x": 12, "y": 8, "w": 12, "h": 6 }
+      ]
+    }
+  },
+  "notes": {
+    "usage": [
+      "Set Grafana global theme to Dark",
+      "Use transparent panels with a dark dashboard background",
+      "Apply stat thresholds using the hex colors in this file",
+      "Use the same layout grid for all primary NOC dashboards"
+    ]
+  }
+}
