@@ -1,25 +1,25 @@
 # Ced's K3s Cluster Setup – End-to-End
 
-This document describes how your current K3s cluster is built so you can re‑create it later or explain it in GitHub/OneNote.
+Note: All IP addresses and subnet ranges in this document have been replaced with placeholders for security. Substitute your own values where you see <placeholder> before running any commands.
 
 ---
 
 ## 1. Base Networking
 
-**HomeLab VLAN:** `10.10.30.0/24`  
-**Gateway:** UniFi Dream Router  
-**DHCP:** Configured to *exclude* `.251–.254` so MetalLB can safely use that range.
+**HomeLab VLAN:** `<homelab-vlan-subnet>`
+**Gateway:** UniFi Dream Router
+**DHCP:** Configured to exclude the upper range so MetalLB can safely use that range.
 
-- Proxmox VE: `10.10.30.250`
-- MetalLB pool: `10.10.30.251–10.10.30.254`
+- Proxmox VE: `<proxmox-host-ip>`
+- MetalLB pool: `<metallb-pool-range>`
 
 Subnets you have overall (for reference):
 
-- Default: `10.10.1.0/24` (not used)
-- Main: `10.10.10.0/24`
-- IoT: `10.10.20.0/24`
-- HomeLab: `10.10.30.0/24`
-- Guest: `10.10.99.0/24`
+- Default: `<default-subnet>` (not used)
+- Main: `<main-vlan-subnet>`
+- IoT: `<iot-vlan-subnet>`
+- HomeLab: `<homelab-vlan-subnet>`
+- Guest: `<guest-vlan-subnet>`
 
 ---
 
@@ -27,9 +27,9 @@ Subnets you have overall (for reference):
 
 ### Nodes
 
-- `k3s-django-1` – `10.10.30.72`  (control-plane, etcd, master)
-- `k3s-django-2` – `10.10.30.245` (control-plane, etcd, master)
-- `k3s-django-3` – `10.10.30.128` (control-plane, etcd, master)
+- `k3s-django-1` – `<control-plane-ip-1>` (control-plane, etcd, master)
+- `k3s-django-2` – `<control-plane-ip-2>` (control-plane, etcd, master)
+- `k3s-django-3` – `<control-plane-ip-3>` (control-plane, etcd, master)
 
 All three are Debian 12 (Bookworm, ARM64 on Raspberry Pi).
 
@@ -56,7 +56,7 @@ sudo chown $(id -u):$(id -g) ~/.kube/config
 Update the kubeconfig to point to the node's real IP instead of `127.0.0.1`:
 
 ```bash
-sed -i 's/https:\/\/127.0.0.1:6443/https:\/\/10.10.30.72:6443/' ~/.kube/config
+sed -i 's/https:\/\/127.0.0.1:6443/https:\/\/<control-plane-ip-1>:6443/' ~/.kube/config
 export KUBECONFIG=$HOME/.kube/config
 ```
 
@@ -80,10 +80,13 @@ echo "$TOKEN"
 On `k3s-django-2` and `k3s-django-3`:
 
 ```bash
-export K3S_URL="https://10.10.30.72:6443"
+export K3S_URL="https://<control-plane-ip-1>:6443"
 export K3S_TOKEN="<PASTE TOKEN FROM k3s-django-1>"
 
-curl -sfL https://get.k3s.io |   K3S_URL=$K3S_URL   K3S_TOKEN=$K3S_TOKEN   sh -s - server
+curl -sfL https://get.k3s.io | \
+  K3S_URL=$K3S_URL \
+  K3S_TOKEN=$K3S_TOKEN \
+  sh -s - server
 ```
 
 Verify from `k3s-django-1`:
@@ -101,7 +104,7 @@ You should now see all three `k3s-django-*` nodes as control-plane,etcd,master.
 You have 9 worker nodes grouped as:
 
 - Ingress: `k3s-node-1`, `k3s-node-2`, `k3s-node-3`
-- Data:    `k3s-node-4`, `k3s-node-5`, `k3s-node-6`
+- Data: `k3s-node-4`, `k3s-node-5`, `k3s-node-6`
 - Monitoring: `k3s-node-7`, `k3s-node-8`, `k3s-node-9`
 
 ### 3.1 Join workers as agents
@@ -109,10 +112,13 @@ You have 9 worker nodes grouped as:
 On each worker node (`k3s-node-N`), use:
 
 ```bash
-export K3S_URL="https://10.10.30.72:6443"
+export K3S_URL="https://<control-plane-ip-1>:6443"
 export K3S_TOKEN="<same token from k3s-django-1>"
 
-curl -sfL https://get.k3s.io |   K3S_URL=$K3S_URL   K3S_TOKEN=$K3S_TOKEN   sh -s - agent
+curl -sfL https://get.k3s.io | \
+  K3S_URL=$K3S_URL \
+  K3S_TOKEN=$K3S_TOKEN \
+  sh -s - agent
 ```
 
 Confirm from `k3s-django-1`:
@@ -176,7 +182,7 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 10.10.30.251-10.10.30.254
+    - <metallb-pool-range>
 ```
 
 and `manifests/metallb/l2advertisement.yaml`:
@@ -224,7 +230,11 @@ helm repo update
 Install ingress-nginx targeting the ingress node group:
 
 ```bash
-helm install ingress-nginx ingress-nginx/ingress-nginx   --namespace ingress-nginx   --create-namespace   --set controller.service.type=LoadBalancer   --set controller.nodeSelector.ingress-node="true"
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --create-namespace \
+  --set controller.service.type=LoadBalancer \
+  --set controller.nodeSelector.ingress-node="true"
 ```
 
 Check:
@@ -234,7 +244,7 @@ kubectl get pods -n ingress-nginx
 kubectl get svc -n ingress-nginx ingress-nginx-controller
 ```
 
-You should see `EXTERNAL-IP` assigned from MetalLB, e.g. `10.10.30.251`.
+You should see `EXTERNAL-IP` assigned from MetalLB, e.g. `<metallb-vip>`.
 
 ---
 
@@ -255,12 +265,12 @@ kubectl apply -f manifests/demo-app/demo-nginx.yaml
 Update your desktop hosts file:
 
 ```text
-10.10.30.251 demo.local
+<metallb-vip> demo.local
 ```
 
 Open `http://demo.local` in a browser and you should see the nginx welcome page, served via:
 
-Desktop → MetalLB VIP (10.10.30.251) → ingress-nginx → demo-nginx Service → Pods.
+Desktop → MetalLB VIP (`<metallb-vip>`) → ingress-nginx → demo-nginx Service → Pods.
 
 ---
 
@@ -282,7 +292,9 @@ helm repo update
 Install with your custom values file:
 
 ```bash
-helm install ceds-noc prometheus-community/kube-prometheus-stack   --namespace monitoring   -f kube-prom-values.yaml
+helm install ceds-noc prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  -f kube-prom-values.yaml
 ```
 
 `kube-prom-values.yaml` (included in this repo) pins Prometheus, Alertmanager, and Grafana to the `monitoring-node=true` nodes, configures PVCs for metrics and Grafana data, and exposes Grafana via a LoadBalancer (MetalLB).
@@ -296,16 +308,16 @@ kubectl get svc -n monitoring
 
 You should see:
 
-- `ceds-noc-grafana` as a `LoadBalancer` with an `EXTERNAL-IP` like `10.10.30.252`
-- Prometheus, Alertmanager, kube-state-metrics, node exporters, etc.
+- `ceds-noc-grafana` as a `LoadBalancer` with an `EXTERNAL-IP` like `<grafana-external-ip>`
+- Prometheus, Alertmanager, kube state metrics, node exporters, etc.
 
 Open Grafana at:
 
 ```text
-http://10.10.30.252
+http://<grafana-external-ip>
 ```
 
-Username: `admin`  
+Username: `admin`
 Password: either the one in `kube-prom-values.yaml` (if set) or via:
 
 ```bash
@@ -327,7 +339,7 @@ Choose the kube-prometheus-stack Prometheus datasource.
 You now have a live NOC for:
 
 - Cluster health (nodes, pods, API server)
-- Per‑node CPU, RAM, disk, pod counts
+- Per-node CPU, RAM, disk, pod counts
 - Ingress and MetalLB metrics
 
 ---
@@ -337,4 +349,4 @@ You now have a live NOC for:
 - Add Loki + Promtail for logs
 - Add Prometheus alerting rules (node down, high CPU, low disk, etc)
 - Add Alertmanager integrations (Discord/Slack/email)
-- Use GitOps (FluxCD or ArgoCD) to manage this repo as the source of truth.
+- Use GitOps (FluxCD or ArgoCD) to manage this repo as the source of truth

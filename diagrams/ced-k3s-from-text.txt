@@ -1,6 +1,6 @@
 # Ced's K3s HomeLab (for draw.io text import)
 
-# Paste this into draw.io via: Arrange → Insert → Advanced → From text
+
 
 Ced HomeLab
   VLAN 10.10.30.0/24
