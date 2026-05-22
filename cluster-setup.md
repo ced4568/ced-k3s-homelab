@@ -95,7 +95,7 @@ Verify from `k3s-django-1`:
 kubectl get nodes -o wide
 ```
 
-You should now see all three `k3s-django-*` nodes as control-plane,etcd,master.
+You should now see all three `k3s-django-*` nodes as control plane,etcd,master.
 
 ---
 
@@ -227,7 +227,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 ```
 
-Install ingress-nginx targeting the ingress node group:
+Install ingress nginx targeting the ingress node group:
 
 ```bash
 helm install ingress-nginx ingress-nginx/ingress-nginx \
