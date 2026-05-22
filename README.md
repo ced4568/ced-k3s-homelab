@@ -1,6 +1,6 @@
-# Ced's K3s HomeLab — 12-Node Raspberry Pi Cluster
+# Ced's K3s HomeLab 12 Node Raspberry Pi Cluster
 
-> A fully high-availability K3s Kubernetes cluster running on Raspberry Pi 4B hardware — purpose-built to mirror production Kubernetes patterns at lab scale, and serve as the orchestration backbone for Ced's NOC.
+> A fully high-availability K3s Kubernetes cluster running on Raspberry Pi 4B hardware purpose-built to mirror production Kubernetes patterns at lab scale, and serve as the orchestration backbone for Ced's NOC.
 
 [![Cluster](https://img.shields.io/badge/Cluster-12%20Nodes-1D9E75?style=flat-square)](#node-inventory)
 [![K3s](https://img.shields.io/badge/K3s-v1.33.6-326CE5?style=flat-square)](https://k3s.io)
@@ -12,11 +12,11 @@
 
 ## Why I Built This
 
-This cluster didn't get added to the homelab because a tutorial said to. It got added because I needed a dedicated orchestration layer that could run the full Ced's NOC observability stack — Prometheus, Grafana, Alertmanager, and Node Exporter across every node — without competing for resources with the Proxmox cluster doing virtualization work.
+This cluster didn't get added to the homelab because a tutorial said to. It got added because I needed a dedicated orchestration layer that could run the full Ced's NOC observability stack Prometheus, Grafana, Alertmanager, and Node Exporter across every node without competing for resources with the Proxmox cluster doing virtualization work.
 
-Twelve Raspberry Pi 4B nodes. Three dedicated control plane nodes running etcd in HA mode. Nine workers split by workload type — ingress, data, and monitoring. MetalLB handling LoadBalancer IPs natively on the HomeLab VLAN. Every node running Debian 12 Bookworm with containerd as the runtime.
+Twelve Raspberry Pi 4B nodes. Three dedicated control plane nodes running etcd in HA mode. Nine workers split by workload type ingress, data, and monitoring. MetalLB handling LoadBalancer IPs natively on the HomeLab VLAN. Every node running Debian 12 Bookworm with containerd as the runtime.
 
-It's been running for 117+ days without a cluster failure. That's not luck — that's what proper HA control plane design gets you.
+It's been running for 117+ days without a cluster failure. That's not luck that's what proper HA control plane design gets you.
 
 ---
 
@@ -117,7 +117,7 @@ Everything below has been confirmed running via `kubectl get pods -A`.
 
 ### MetalLB — L2 Load Balancer
 
-Provides native LoadBalancer IP assignment on the HomeLab VLAN (`10.10.30.0/24`). One MetalLB speaker pod runs on every node in the cluster for L2 advertisement.
+Provides native LoadBalancer IP assignment on the HomeLab VLAN. One MetalLB speaker pod runs on every node in the cluster for L2 advertisement.
 
 ### ingress-nginx — Ingress Controller
 
@@ -138,7 +138,7 @@ The full observability stack deployed via Helm:
 
 Node Exporter runs as a DaemonSet — one pod per node — giving Grafana per-node CPU, RAM, disk, and network metrics across the entire cluster.
 
-📺 **[View Live NOC Dashboard →](https://noc.chasedumphord.com)**
+**[View Live NOC Dashboard →](https://noc.chasedumphord.com)**
 
 ---
 
@@ -151,7 +151,7 @@ ced-k3s-homelab/
 ├── diagrams/               # Architecture diagrams
 │   └── ced-k3s-from-text.txt   # draw.io importable diagram
 ├── docs/
-│   └── per-node-notes.md   # Per-node inventory (IP, role, hardware)
+│   └── per-node-notes.md   # Per-node inventory (role, hardware, status)
 ├── manifests/
 │   ├── demo-app/           # demo-nginx workload
 │   └── ingress/            # Grafana + Prometheus ingress rules
@@ -221,8 +221,8 @@ kubectl apply -f manifests/ingress/prometheus-ingress.yaml
 
 ## Roadmap
 
-- [x] 12-node K3s cluster on Raspberry Pi 4B
-- [x] HA control plane with 3-node etcd
+- [x] 12 node K3s cluster on Raspberry Pi 4B
+- [x] HA control plane with 3 node etcd
 - [x] Node labeling by workload pool (ingress, data, monitoring)
 - [x] MetalLB L2 load balancer
 - [x] ingress-nginx ingress controller
@@ -242,8 +242,8 @@ kubectl apply -f manifests/ingress/prometheus-ingress.yaml
 
 | Project | Description |
 |---------|-------------|
-| [ceds-homelab](https://github.com/ced4568/ceds-homelab) | Parent homelab — 6-node Proxmox cluster, TrueNAS, full infrastructure |
-| [ceds-aprs-igate](https://github.com/ced4568/ceds-aprs-igate) | Dual-node APRS RF-to-internet iGate (KJ5JCO) |
+| [ceds-homelab](https://github.com/ced4568/ceds-homelab) | Parent homelab 6-node Proxmox cluster, TrueNAS, full infrastructure |
+| [ceds-aprs-igate](https://github.com/ced4568/ceds-aprs-igate) | Dual-node APRS RF to internet iGate (KJ5JCO) |
 | [ced-portfolio](https://github.com/ced4568/ced-portfolio) | Source for chasedumphord.com |
 
 ---
@@ -251,7 +251,7 @@ kubectl apply -f manifests/ingress/prometheus-ingress.yaml
 ## Author
 
 **Chase Dumphord (Ced)**
-Digital Systems Engineer · GE Aerospace · Oxford, MS
+DevOps and Cloud Infrastructure Engineer · GE Aerospace · Oxford, MS
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-chasedumphord.com-0F6E56?style=flat-square)](https://chasedumphord.com)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-chase--dumphord-0A66C2?style=flat-square)](https://www.linkedin.com/in/chase-dumphord/)
