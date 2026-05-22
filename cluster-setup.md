@@ -1,4 +1,4 @@
-# Ced's K3s Cluster Setup – End-to-End
+# Ced's K3s Cluster Setup End to End
 
 Note: All IP addresses and subnet ranges in this document have been replaced with placeholders for security. Substitute your own values where you see <placeholder> before running any commands.
 
